@@ -1,9 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
 import { User, GraduationCap, Code, Building, MapPin, CheckCircle } from "lucide-react";
 
 interface StudentData {
@@ -16,15 +14,99 @@ interface StudentData {
   location: string;
 }
 
-const WizardStep = ({ title, step, totalSteps }: { title: string; step: number; totalSteps: number }) => (
-  <div className="bg-wizard-header text-white p-6 text-center">
+interface TranslationStrings {
+  // Step titles
+  stepTitle1: string;
+  stepTitle2: string;
+  stepTitle3: string;
+  stepTitle4: string;
+  stepTitle5: string;
+  
+  // Personal Info
+  gender: string;
+  male: string;
+  female: string;
+  yourName: string;
+  yourAge: string;
+  enterAge: string;
+  
+  // Education
+  education12th: string;
+  diploma: string;
+  graduate: string;
+  postGraduate: string;
+  
+  // Skills
+  selectMultipleSkills: string;
+  
+  // Sectors
+  selectSectors: string;
+  
+  // Location
+  homeState: string;
+  nearbyStates: string;
+  anywhereIndia: string;
+  virtualOnline: string;
+  
+  // Navigation
+  back: string;
+  previous: string;
+  next: string;
+  getRecommendations: string;
+}
+
+// Default English translations
+const defaultTranslations: TranslationStrings = {
+  stepTitle1: "Let's get to know you",
+  stepTitle2: "Your Education Level",
+  stepTitle3: "What subjects or skills have you studied?",
+  stepTitle4: "Which sector interests you?",
+  stepTitle5: "Where do you want to work?",
+  
+  gender: "Gender",
+  male: "Male",
+  female: "Female",
+  yourName: "Your Name",
+  yourAge: "Your Age",
+  enterAge: "Enter your age",
+  
+  education12th: "12th Pass",
+  diploma: "Diploma",
+  graduate: "Graduate",
+  postGraduate: "Post Graduate",
+  
+  selectMultipleSkills: "Select multiple options that apply to you",
+  
+  selectSectors: "Select the sectors you're interested in",
+  
+  homeState: "My Home State",
+  nearbyStates: "Nearby States",
+  anywhereIndia: "Anywhere in India",
+  virtualOnline: "Virtual/Online",
+  
+  back: "Back",
+  previous: "Previous",
+  next: "Next",
+  getRecommendations: "Get Recommendations"
+};
+
+const WizardStep = ({ 
+  title, 
+  step, 
+  totalSteps 
+}: { 
+  title: string; 
+  step: number; 
+  totalSteps: number; 
+}) => (
+  <div className="bg-blue-600 text-white p-6 text-center">
     <h2 className="text-xl font-semibold mb-3">{title}</h2>
     <div className="flex justify-center gap-2">
       {Array.from({ length: totalSteps }, (_, i) => (
         <div
           key={i}
-          className={`w-2 h-2 rounded-full ${
-            i === step - 1 ? "bg-white" : "bg-wizard-step"
+          className={`w-2 h-2 rounded-full transition-colors duration-200 ${
+            i === step - 1 ? "bg-white" : "bg-blue-400"
           }`}
         />
       ))}
@@ -32,68 +114,95 @@ const WizardStep = ({ title, step, totalSteps }: { title: string; step: number; 
   </div>
 );
 
-const PersonalInfoStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => (
-  <div className="p-6 space-y-6">
-    <div>
-      <h3 className="font-semibold mb-4">Gender</h3>
-      <div className="grid grid-cols-2 gap-4">
-        {[
-          { value: "male", label: "Male", icon: "👨" },
-          { value: "female", label: "Female", icon: "👩" }
-        ].map((option) => (
-          <Card
-            key={option.value}
-            className={`cursor-pointer transition-colors hover:bg-muted ${
-              data.gender === option.value ? "ring-2 ring-primary bg-accent/50" : ""
-            }`}
-            onClick={() => onChange({ gender: option.value })}
-          >
-            <CardContent className="p-4 text-center">
-              <div className="text-3xl mb-2">{option.icon}</div>
-              <div className="font-medium">{option.label}</div>
-            </CardContent>
-          </Card>
-        ))}
+const PersonalInfoStep = ({ 
+  data, 
+  onChange, 
+  translations 
+}: { 
+  data: StudentData; 
+  onChange: (data: Partial<StudentData>) => void;
+  translations: TranslationStrings;
+}) => {
+  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Only allow numbers and limit to reasonable age range
+    if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 16 && parseInt(value) <= 100)) {
+      onChange({ age: value });
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <div>
+        <h3 className="font-semibold mb-4">{translations.gender}</h3>
+        <div className="grid grid-cols-2 gap-4">
+          {[
+            { value: "male", label: translations.male, icon: "👨" },
+            { value: "female", label: translations.female, icon: "👩" }
+          ].map((option) => (
+            <Card
+              key={option.value}
+              className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+                data.gender === option.value ? "ring-2 ring-blue-500 bg-blue-50" : ""
+              }`}
+              onClick={() => onChange({ gender: option.value })}
+            >
+              <CardContent className="p-4 text-center">
+                <div className="text-3xl mb-2">{option.icon}</div>
+                <div className="font-medium">{option.label}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold mb-2">{translations.yourName}</h3>
+        <Input
+          placeholder={translations.yourName}
+          value={data.name}
+          onChange={(e) => onChange({ name: e.target.value })}
+          className="transition-all duration-200"
+        />
+      </div>
+
+      <div>
+        <h3 className="font-semibold mb-2">{translations.yourAge}</h3>
+        <Input
+          type="number"
+          placeholder={translations.enterAge}
+          value={data.age}
+          onChange={handleAgeChange}
+          className="transition-all duration-200"
+          min="16"
+          max="100"
+        />
+        {data.age && (parseInt(data.age) < 16 || parseInt(data.age) > 100) && (
+          <p className="text-sm text-red-500 mt-1">Please enter an age between 16 and 100</p>
+        )}
+      </div>
+
+      <div className="flex justify-center py-4">
+        <User className="w-16 h-16 text-gray-400" />
       </div>
     </div>
+  );
+};
 
-    <div>
-      <h3 className="font-semibold mb-2">Your Name</h3>
-      <Input
-        placeholder="Your Name"
-        value={data.name}
-        onChange={(e) => onChange({ name: e.target.value })}
-      />
-    </div>
-
-    <div>
-      <h3 className="font-semibold mb-2">Your Age</h3>
-      <Select value={data.age} onValueChange={(value) => onChange({ age: value })}>
-        <SelectTrigger>
-          <SelectValue placeholder="Select your age" />
-        </SelectTrigger>
-        <SelectContent>
-          {Array.from({ length: 30 }, (_, i) => i + 16).map((age) => (
-            <SelectItem key={age} value={age.toString()}>
-              {age}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-
-    <div className="flex justify-center py-4">
-      <User className="w-16 h-16 text-muted-foreground" />
-    </div>
-  </div>
-);
-
-const EducationStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
+const EducationStep = ({ 
+  data, 
+  onChange, 
+  translations 
+}: { 
+  data: StudentData; 
+  onChange: (data: Partial<StudentData>) => void;
+  translations: TranslationStrings;
+}) => {
   const educationOptions = [
-    { value: "12th Pass", label: "12th Pass", icon: "📚" },
-    { value: "Diploma", label: "Diploma", icon: "📜" },
-    { value: "Graduate", label: "Graduate", icon: "🎓" },
-    { value: "Post Graduate", label: "Post Graduate", icon: "👨‍🎓" }
+    { value: "12th Pass", label: translations.education12th, icon: "📚" },
+    { value: "Diploma", label: translations.diploma, icon: "📜" },
+    { value: "Graduate", label: translations.graduate, icon: "🎓" },
+    { value: "Post Graduate", label: translations.postGraduate, icon: "👨‍🎓" }
   ];
 
   return (
@@ -102,28 +211,36 @@ const EducationStep = ({ data, onChange }: { data: StudentData; onChange: (data:
         {educationOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-colors hover:bg-muted ${
-              data.education === option.value ? "ring-2 ring-primary bg-accent/50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+              data.education === option.value ? "ring-2 ring-blue-500 bg-blue-50" : ""
             }`}
             onClick={() => onChange({ education: option.value })}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.education === option.value && <CheckCircle className="w-5 h-5 text-primary" />}
+              {data.education === option.value && <CheckCircle className="w-5 h-5 text-blue-500" />}
             </CardContent>
           </Card>
         ))}
       </div>
       
       <div className="flex justify-center py-4">
-        <GraduationCap className="w-16 h-16 text-muted-foreground" />
+        <GraduationCap className="w-16 h-16 text-gray-400" />
       </div>
     </div>
   );
 };
 
-const SkillsStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
+const SkillsStep = ({ 
+  data, 
+  onChange, 
+  translations 
+}: { 
+  data: StudentData; 
+  onChange: (data: Partial<StudentData>) => void;
+  translations: TranslationStrings;
+}) => {
   const skillOptions = [
     { value: "Cloud Computing", label: "Cloud Computing", icon: "☁️" },
     { value: "DevOps", label: "DevOps", icon: "⚙️" },
@@ -168,43 +285,51 @@ const SkillsStep = ({ data, onChange }: { data: StudentData; onChange: (data: Pa
     { value: "SaaS Architecture", label: "SaaS Architecture", icon: "🏗️" }
   ];
 
-  const toggleSkill = (skill: string) => {
+  const toggleSkill = useCallback((skill: string) => {
     const newSkills = data.skills.includes(skill)
       ? data.skills.filter(s => s !== skill)
       : [...data.skills, skill];
     onChange({ skills: newSkills });
-  };
+  }, [data.skills, onChange]);
 
   return (
     <div className="p-6 space-y-6">
-      <p className="text-sm text-muted-foreground mb-4">Select multiple options that apply to you</p>
+      <p className="text-sm text-gray-600 mb-4">{translations.selectMultipleSkills}</p>
       
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {skillOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-colors hover:bg-muted ${
-              data.skills.includes(option.value) ? "ring-2 ring-primary bg-accent/50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+              data.skills.includes(option.value) ? "ring-2 ring-blue-500 bg-blue-50" : ""
             }`}
             onClick={() => toggleSkill(option.value)}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.skills.includes(option.value) && <CheckCircle className="w-5 h-5 text-primary" />}
+              {data.skills.includes(option.value) && <CheckCircle className="w-5 h-5 text-blue-500" />}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="flex justify-center py-4">
-        <Code className="w-16 h-16 text-muted-foreground" />
+        <Code className="w-16 h-16 text-gray-400" />
       </div>
     </div>
   );
 };
 
-const SectorStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
+const SectorStep = ({ 
+  data, 
+  onChange, 
+  translations 
+}: { 
+  data: StudentData; 
+  onChange: (data: Partial<StudentData>) => void;
+  translations: TranslationStrings;
+}) => {
   const sectorOptions = [
     { value: "Engineering", label: "Engineering", icon: "⚙️" },
     { value: "Management", label: "Management", icon: "👔" },
@@ -217,48 +342,56 @@ const SectorStep = ({ data, onChange }: { data: StudentData; onChange: (data: Pa
     { value: "Other", label: "Other", icon: "🔍" }
   ];
 
-  const toggleSector = (sector: string) => {
+  const toggleSector = useCallback((sector: string) => {
     const newSectors = data.sectors.includes(sector)
       ? data.sectors.filter(s => s !== sector)
       : [...data.sectors, sector];
     onChange({ sectors: newSectors });
-  };
+  }, [data.sectors, onChange]);
 
   return (
     <div className="p-6 space-y-6">
-      <p className="text-sm text-muted-foreground mb-4">Select the sectors you're interested in</p>
+      <p className="text-sm text-gray-600 mb-4">{translations.selectSectors}</p>
       
       <div className="space-y-3">
         {sectorOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-colors hover:bg-muted ${
-              data.sectors.includes(option.value) ? "ring-2 ring-primary bg-accent/50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+              data.sectors.includes(option.value) ? "ring-2 ring-blue-500 bg-blue-50" : ""
             }`}
             onClick={() => toggleSector(option.value)}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.sectors.includes(option.value) && <CheckCircle className="w-5 h-5 text-primary" />}
+              {data.sectors.includes(option.value) && <CheckCircle className="w-5 h-5 text-blue-500" />}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="flex justify-center py-4">
-        <Building className="w-16 h-16 text-muted-foreground" />
+        <Building className="w-16 h-16 text-gray-400" />
       </div>
     </div>
   );
 };
 
-const LocationStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
+const LocationStep = ({ 
+  data, 
+  onChange, 
+  translations 
+}: { 
+  data: StudentData; 
+  onChange: (data: Partial<StudentData>) => void;
+  translations: TranslationStrings;
+}) => {
   const locationOptions = [
-    { value: "My Home State", label: "My Home State", icon: "🏠" },
-    { value: "Nearby States", label: "Nearby States", icon: "📍" },
-    { value: "Anywhere in India", label: "Anywhere in India", icon: "🇮🇳" },
-    { value: "Virtual/Online", label: "Virtual/Online", icon: "💻" }
+    { value: "My Home State", label: translations.homeState, icon: "🏠" },
+    { value: "Nearby States", label: translations.nearbyStates, icon: "📍" },
+    { value: "Anywhere in India", label: translations.anywhereIndia, icon: "🇮🇳" },
+    { value: "Virtual/Online", label: translations.virtualOnline, icon: "💻" }
   ];
 
   return (
@@ -267,29 +400,33 @@ const LocationStep = ({ data, onChange }: { data: StudentData; onChange: (data: 
         {locationOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-colors hover:bg-muted ${
-              data.location === option.value ? "ring-2 ring-primary bg-accent/50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
+              data.location === option.value ? "ring-2 ring-blue-500 bg-blue-50" : ""
             }`}
             onClick={() => onChange({ location: option.value })}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.location === option.value && <CheckCircle className="w-5 h-5 text-primary" />}
+              {data.location === option.value && <CheckCircle className="w-5 h-5 text-blue-500" />}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="flex justify-center py-4">
-        <MapPin className="w-16 h-16 text-muted-foreground" />
+        <MapPin className="w-16 h-16 text-gray-400" />
       </div>
     </div>
   );
 };
 
-const StudentWizard = () => {
-  const navigate = useNavigate();
+interface StudentWizardProps {
+  translations?: Partial<TranslationStrings>;
+  onComplete?: (data: StudentData) => void;
+}
+
+const StudentWizard = ({ translations: customTranslations, onComplete }: StudentWizardProps) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [studentData, setStudentData] = useState<StudentData>({
     gender: "",
@@ -300,66 +437,86 @@ const StudentWizard = () => {
     sectors: [],
     location: ""
   });
+  const [isNavigating, setIsNavigating] = useState(false);
 
+  const translations = { ...defaultTranslations, ...customTranslations };
   const totalSteps = 5;
 
-  const updateStudentData = (newData: Partial<StudentData>) => {
+  const updateStudentData = useCallback((newData: Partial<StudentData>) => {
     setStudentData(prev => ({ ...prev, ...newData }));
-  };
+  }, []);
 
-  const canProceed = () => {
+  const canProceed = useCallback(() => {
     switch (currentStep) {
-      case 1: return studentData.gender && studentData.name && studentData.age;
+      case 1: return studentData.gender && studentData.name && studentData.age && 
+                     parseInt(studentData.age) >= 16 && parseInt(studentData.age) <= 100;
       case 2: return studentData.education;
       case 3: return studentData.skills.length > 0;
       case 4: return studentData.sectors.length > 0;
       case 5: return studentData.location;
       default: return false;
     }
-  };
+  }, [currentStep, studentData]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(async () => {
+    if (isNavigating) return;
+    
     if (currentStep < totalSteps) {
       setCurrentStep(prev => prev + 1);
     } else {
-      // Save data and navigate to recommendations
-      localStorage.setItem('studentProfile', JSON.stringify(studentData));
-      navigate('/recommendations');
+      setIsNavigating(true);
+      try {
+        // Call the completion callback if provided
+        if (onComplete) {
+          onComplete(studentData);
+        } else {
+          // Default behavior - log data
+          console.log('Student profile data:', JSON.stringify(studentData, null, 2));
+          alert('Profile completed! Check console for data.');
+        }
+        
+        setIsNavigating(false);
+      } catch (error) {
+        console.error('Error during completion:', error);
+        setIsNavigating(false);
+      }
     }
-  };
+  }, [currentStep, totalSteps, studentData, isNavigating, onComplete]);
 
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
+    if (isNavigating) return;
+    
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
-    } else {
-      navigate('/');
     }
-  };
+  }, [currentStep, isNavigating]);
 
-  const getStepTitle = () => {
+  const getStepTitle = useCallback(() => {
     switch (currentStep) {
-      case 1: return "Let's get to know you";
-      case 2: return "Your Education Level";
-      case 3: return "What subjects or skills have you studied?";
-      case 4: return "Which sector interests you?";
-      case 5: return "Where do you want to work?";
+      case 1: return translations.stepTitle1;
+      case 2: return translations.stepTitle2;
+      case 3: return translations.stepTitle3;
+      case 4: return translations.stepTitle4;
+      case 5: return translations.stepTitle5;
       default: return "";
     }
-  };
+  }, [currentStep, translations]);
 
-  const renderStep = () => {
+  const renderStep = useCallback(() => {
+    const stepProps = { data: studentData, onChange: updateStudentData, translations };
+    
     switch (currentStep) {
-      case 1: return <PersonalInfoStep data={studentData} onChange={updateStudentData} />;
-      case 2: return <EducationStep data={studentData} onChange={updateStudentData} />;
-      case 3: return <SkillsStep data={studentData} onChange={updateStudentData} />;
-      case 4: return <SectorStep data={studentData} onChange={updateStudentData} />;
-      case 5: return <LocationStep data={studentData} onChange={updateStudentData} />;
+      case 1: return <PersonalInfoStep {...stepProps} />;
+      case 2: return <EducationStep {...stepProps} />;
+      case 3: return <SkillsStep {...stepProps} />;
+      case 4: return <SectorStep {...stepProps} />;
+      case 5: return <LocationStep {...stepProps} />;
       default: return null;
     }
-  };
+  }, [currentStep, studentData, updateStudentData, translations]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       <WizardStep title={getStepTitle()} step={currentStep} totalSteps={totalSteps} />
       
       <div className="max-w-md mx-auto">
@@ -371,17 +528,19 @@ const StudentWizard = () => {
           <Button
             variant="outline"
             onClick={handlePrevious}
-            className="px-8"
+            disabled={isNavigating || currentStep === 1}
+            className="px-8 transition-all duration-200"
           >
-            {currentStep === 1 ? "Back" : "Previous"}
+            {currentStep === 1 ? translations.back : translations.previous}
           </Button>
           
           <Button
             onClick={handleNext}
-            disabled={!canProceed()}
-            className="px-8"
+            disabled={!canProceed() || isNavigating}
+            className="px-8 transition-all duration-200"
           >
-            {currentStep === totalSteps ? "Get Recommendations" : "Next"}
+            {isNavigating ? "Loading..." : 
+             currentStep === totalSteps ? translations.getRecommendations : translations.next}
           </Button>
         </div>
       </div>
