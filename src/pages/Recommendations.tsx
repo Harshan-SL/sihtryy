@@ -114,14 +114,14 @@ const Recommendations = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-success text-white p-6">
+      <div className="bg-foreground text-background p-6">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-4 mb-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => navigate('/')}
-              className="text-white hover:bg-white/20"
+              className="text-background hover:bg-background/20"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Home
@@ -131,7 +131,7 @@ const Recommendations = () => {
             <div className="text-2xl">🎯</div>
             <div>
               <h1 className="text-xl font-semibold">Recommended for You</h1>
-              <p className="text-green-100">
+              <p className="text-background/80">
                 {recommendations.length} perfect matches found for your profile
               </p>
             </div>

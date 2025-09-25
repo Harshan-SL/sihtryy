@@ -38,7 +38,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <div className="bg-gradient-to-br from-primary/10 to-accent/5 py-16">
+      <div className="bg-background py-16">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <div className="flex justify-center mb-6">
             <div className="relative">
@@ -46,7 +46,7 @@ const Index = () => {
               <div className="absolute -top-2 -right-2 text-2xl animate-bounce">✨</div>
             </div>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 text-foreground">
             Internship Match
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -78,8 +78,8 @@ const Index = () => {
             {portals.map((portal) => (
               <Card key={portal.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
                 <CardHeader className="text-center pb-4">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                    <portal.icon className="w-8 h-8 text-primary" />
+                  <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center group-hover:bg-muted/80 transition-colors">
+                    <portal.icon className="w-8 h-8 text-foreground" />
                   </div>
                   <CardTitle className="text-xl mb-2">{portal.title}</CardTitle>
                 </CardHeader>
