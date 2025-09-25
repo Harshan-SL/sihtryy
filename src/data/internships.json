@@ -1,0 +1,87 @@
+[
+  {
+    "id": 1,
+    "company": "TechMahindra",
+    "role": "Software Development Intern",
+    "location": "Bangalore, Karnataka",
+    "type": "Hybrid",
+    "stipend": 15000,
+    "duration": "3 months",
+    "requirements": {
+      "education": ["12th Pass", "Diploma", "Graduate"],
+      "skills": ["Software Development", "Digital Circuit Design"],
+      "sectors": ["IT/Technology", "Engineering"],
+      "locations": ["My Home State", "Nearby States", "Anywhere in India"]
+    },
+    "description": "Join our innovative software development team to work on cutting-edge projects using modern technologies like React, Node.js, and cloud platforms.",
+    "deadline": "2024-10-31"
+  },
+  {
+    "id": 2,
+    "company": "Wipro Limited",
+    "role": "Data Analytics Intern",
+    "location": "Hyderabad, Telangana",
+    "type": "Hybrid",
+    "stipend": 12000,
+    "duration": "4 months",
+    "requirements": {
+      "education": ["Graduate", "Post Graduate"],
+      "skills": ["Data Analytics", "Software Development"],
+      "sectors": ["IT/Technology", "Research & Development"],
+      "locations": ["My Home State", "Nearby States", "Anywhere in India"]
+    },
+    "description": "Work with our data science team to analyze large datasets and create meaningful insights for our clients using Python, R, and advanced analytics tools.",
+    "deadline": "2024-11-15"
+  },
+  {
+    "id": 3,
+    "company": "Larsen & Toubro",
+    "role": "Embedded Systems Intern",
+    "location": "Chennai, Tamil Nadu",
+    "type": "On-site",
+    "stipend": 18000,
+    "duration": "6 months",
+    "requirements": {
+      "education": ["Diploma", "Graduate"],
+      "skills": ["Embedded Systems", "Microcontroller Programming", "Digital Circuit Design"],
+      "sectors": ["Engineering", "Manufacturing"],
+      "locations": ["My Home State", "Nearby States", "Anywhere in India"]
+    },
+    "description": "Work on embedded systems projects involving microcontroller programming, IoT devices, and industrial automation systems.",
+    "deadline": "2024-12-01"
+  },
+  {
+    "id": 4,
+    "company": "Infosys",
+    "role": "Digital Marketing Intern",
+    "location": "Virtual/Online",
+    "type": "Remote",
+    "stipend": 8000,
+    "duration": "3 months",
+    "requirements": {
+      "education": ["12th Pass", "Diploma", "Graduate"],
+      "skills": ["Data Analytics", "Software Development"],
+      "sectors": ["IT Services", "IT/Technology"],
+      "locations": ["Virtual/Online"]
+    },
+    "description": "Learn digital marketing strategies, content creation, and analytics while working on real client projects in a remote environment.",
+    "deadline": "2024-11-30"
+  },
+  {
+    "id": 5,
+    "company": "Bosch India",
+    "role": "Industrial Automation Intern",
+    "location": "Pune, Maharashtra",
+    "type": "On-site",
+    "stipend": 16000,
+    "duration": "5 months",
+    "requirements": {
+      "education": ["Graduate", "Post Graduate"],
+      "skills": ["PLC & Industrial Automation", "Embedded Systems"],
+      "sectors": ["Manufacturing", "Engineering"],
+      "locations": ["My Home State", "Nearby States", "Anywhere in India"]
+    },
+    "description": "Work on industrial automation projects including PLC programming, SCADA systems, and process optimization in manufacturing environments.",
+    "deadline": "2024-10-15"
+  }
+]
