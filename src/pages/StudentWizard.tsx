@@ -90,8 +90,7 @@ const PersonalInfoStep = ({ data, onChange }: { data: StudentData; onChange: (da
 
 const EducationStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
   const educationOptions = [
-    { value: "10th Pass", label: "10th Pass", icon: "📚" },
-    { value: "12th Pass", label: "12th Pass", icon: "🎓" },
+    { value: "12th Pass", label: "12th Pass", icon: "📚" },
     { value: "Diploma", label: "Diploma", icon: "📜" },
     { value: "Graduate", label: "Graduate", icon: "🎓" },
     { value: "Post Graduate", label: "Post Graduate", icon: "👨‍🎓" }
@@ -126,13 +125,47 @@ const EducationStep = ({ data, onChange }: { data: StudentData; onChange: (data:
 
 const SkillsStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
   const skillOptions = [
-    { value: "Digital Circuit Design", label: "Digital Circuit Design", icon: "💻" },
-    { value: "Embedded Systems", label: "Embedded Systems", icon: "🔧" },
-    { value: "Signal Processing", label: "Signal Processing", icon: "📊" },
-    { value: "Microcontroller Programming", label: "Microcontroller Programming", icon: "🎛️" },
-    { value: "Data Analytics", label: "Data Analytics", icon: "📈" },
-    { value: "Software Development", label: "Software Development", icon: "🖥️" },
-    { value: "PLC & Industrial Automation", label: "PLC & Industrial Automation", icon: "🏭" }
+    { value: "Cloud Computing", label: "Cloud Computing", icon: "☁️" },
+    { value: "DevOps", label: "DevOps", icon: "⚙️" },
+    { value: "Data Analytics", label: "Data Analytics", icon: "📊" },
+    { value: "AI & ML", label: "AI & ML", icon: "🤖" },
+    { value: "Cybersecurity", label: "Cybersecurity", icon: "🔒" },
+    { value: "Python", label: "Python", icon: "🐍" },
+    { value: "Automation", label: "Automation", icon: "🤖" },
+    { value: "Project Management", label: "Project Management", icon: "📋" },
+    { value: "Renewable Energy Systems", label: "Renewable Energy Systems", icon: "🔋" },
+    { value: "Automotive Electronics", label: "Automotive Electronics", icon: "🚗" },
+    { value: "Risk Management", label: "Risk Management", icon: "⚖️" },
+    { value: "Digital Banking", label: "Digital Banking", icon: "🏦" },
+    { value: "FinTech", label: "FinTech", icon: "💳" },
+    { value: "Manufacturing Processes", label: "Manufacturing Processes", icon: "🏭" },
+    { value: "Lean Manufacturing", label: "Lean Manufacturing", icon: "⚡" },
+    { value: "Supply Chain Management", label: "Supply Chain Management", icon: "📦" },
+    { value: "Quality Assurance", label: "Quality Assurance", icon: "✅" },
+    { value: "Marketing Analytics", label: "Marketing Analytics", icon: "📈" },
+    { value: "Production Planning", label: "Production Planning", icon: "📅" },
+    { value: "Industrial Engineering", label: "Industrial Engineering", icon: "🏗️" },
+    { value: "Safety & Compliance", label: "Safety & Compliance", icon: "🦺" },
+    { value: "Drilling Operations", label: "Drilling Operations", icon: "⛽" },
+    { value: "Power Plant Operations", label: "Power Plant Operations", icon: "⚡" },
+    { value: "Grid Management", label: "Grid Management", icon: "🔌" },
+    { value: "Process Safety", label: "Process Safety", icon: "🛡️" },
+    { value: "Environmental Compliance", label: "Environmental Compliance", icon: "🌱" },
+    { value: "Metallurgy", label: "Metallurgy", icon: "🔬" },
+    { value: "Operations Management", label: "Operations Management", icon: "⚙️" },
+    { value: "App Development", label: "App Development", icon: "📱" },
+    { value: "UI/UX", label: "UI/UX", icon: "🎨" },
+    { value: "Logistics Optimization", label: "Logistics Optimization", icon: "🚚" },
+    { value: "Data Science", label: "Data Science", icon: "📊" },
+    { value: "EdTech Analytics", label: "EdTech Analytics", icon: "📚" },
+    { value: "Payment Gateway Integration", label: "Payment Gateway Integration", icon: "💰" },
+    { value: "UPI", label: "UPI", icon: "📱" },
+    { value: "Digital Payments", label: "Digital Payments", icon: "💳" },
+    { value: "Web Development", label: "Web Development", icon: "💻" },
+    { value: "Digital Marketing", label: "Digital Marketing", icon: "📢" },
+    { value: "Supply Chain Analytics", label: "Supply Chain Analytics", icon: "📊" },
+    { value: "Cloud & API Integration", label: "Cloud & API Integration", icon: "🔗" },
+    { value: "SaaS Architecture", label: "SaaS Architecture", icon: "🏗️" }
   ];
 
   const toggleSkill = (skill: string) => {
@@ -146,7 +179,7 @@ const SkillsStep = ({ data, onChange }: { data: StudentData; onChange: (data: Pa
     <div className="p-6 space-y-6">
       <p className="text-sm text-muted-foreground mb-4">Select multiple options that apply to you</p>
       
-      <div className="space-y-3">
+      <div className="space-y-3 max-h-96 overflow-y-auto">
         {skillOptions.map((option) => (
           <Card
             key={option.value}
@@ -173,11 +206,15 @@ const SkillsStep = ({ data, onChange }: { data: StudentData; onChange: (data: Pa
 
 const SectorStep = ({ data, onChange }: { data: StudentData; onChange: (data: Partial<StudentData>) => void }) => {
   const sectorOptions = [
-    { value: "IT/Technology", label: "IT/Technology", icon: "💻" },
     { value: "Engineering", label: "Engineering", icon: "⚙️" },
-    { value: "Manufacturing", label: "Manufacturing", icon: "🏭" },
-    { value: "Research & Development", label: "Research & Development", icon: "🔬" },
-    { value: "IT Services", label: "IT Services", icon: "🌐" }
+    { value: "Management", label: "Management", icon: "👔" },
+    { value: "Finance", label: "Finance", icon: "💰" },
+    { value: "Operations", label: "Operations", icon: "🔧" },
+    { value: "Marketing", label: "Marketing", icon: "📢" },
+    { value: "Life Sciences", label: "Life Sciences", icon: "🧬" },
+    { value: "Information Technology", label: "Information Technology", icon: "💻" },
+    { value: "Education", label: "Education", icon: "📚" },
+    { value: "Other", label: "Other", icon: "🔍" }
   ];
 
   const toggleSector = (sector: string) => {
@@ -189,6 +226,8 @@ const SectorStep = ({ data, onChange }: { data: StudentData; onChange: (data: Pa
 
   return (
     <div className="p-6 space-y-6">
+      <p className="text-sm text-muted-foreground mb-4">Select the sectors you're interested in</p>
+      
       <div className="space-y-3">
         {sectorOptions.map((option) => (
           <Card

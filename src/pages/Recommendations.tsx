@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Calendar, IndianRupee, Clock, ArrowLeft } from "lucide-react";
-import internshipsData from "@/data/internships.json";
+import { MapPin, Calendar, IndianRupee, Clock, ArrowLeft, Users } from "lucide-react";
 
 interface StudentData {
   gender: string;
@@ -17,21 +16,16 @@ interface StudentData {
 }
 
 interface Internship {
-  id: number;
-  company: string;
-  role: string;
+  company_name: string;
   location: string;
-  type: string;
-  stipend: number;
-  duration: string;
-  requirements: {
-    education: string[];
-    skills: string[];
-    sectors: string[];
-    locations: string[];
-  };
-  description: string;
-  deadline: string;
+  stipend_per_month_inr: number;
+  number_of_internships_offered: number;
+  start_date: string;
+  level_type: string;
+  skill_set: string;
+  minimum_education: string;
+  domain: string;
+  role_offered: string;
 }
 
 const calculateMatchPercentage = (internship: Internship, studentData: StudentData): number => {
@@ -40,39 +34,64 @@ const calculateMatchPercentage = (internship: Internship, studentData: StudentDa
 
   // Education match (30% weight)
   maxScore += 30;
-  if (internship.requirements.education.includes(studentData.education)) {
+  if (internship.minimum_education === studentData.education) {
     totalScore += 30;
+  } else {
+    // Partial match for education hierarchy
+    const educationHierarchy = ["12th Pass", "Diploma", "Graduate", "Post Graduate"];
+    const internshipIndex = educationHierarchy.indexOf(internship.minimum_education);
+    const studentIndex = educationHierarchy.indexOf(studentData.education);
+    
+    if (studentIndex >= internshipIndex && internshipIndex !== -1) {
+      totalScore += 20; // Partial score if student education is higher
+    }
   }
 
   // Skills match (35% weight)
   maxScore += 35;
-  const skillMatches = studentData.skills.filter(skill => 
-    internship.requirements.skills.includes(skill)
-  ).length;
-  const skillScore = (skillMatches / Math.max(studentData.skills.length, 1)) * 35;
-  totalScore += skillScore;
+  const skillMatches = studentData.skills.some(skill => 
+    internship.skill_set.toLowerCase().includes(skill.toLowerCase()) ||
+    skill.toLowerCase().includes(internship.skill_set.toLowerCase())
+  );
+  if (skillMatches) {
+    totalScore += 35;
+  }
 
-  // Sector match (25% weight)
+  // Domain/Sector match (25% weight)
   maxScore += 25;
-  const sectorMatches = studentData.sectors.filter(sector => 
-    internship.requirements.sectors.includes(sector)
-  ).length;
-  const sectorScore = (sectorMatches / Math.max(studentData.sectors.length, 1)) * 25;
-  totalScore += sectorScore;
+  const domainMatches = studentData.sectors.some(sector => 
+    internship.domain.toLowerCase().includes(sector.toLowerCase()) ||
+    sector.toLowerCase().includes(internship.domain.toLowerCase())
+  );
+  if (domainMatches) {
+    totalScore += 25;
+  }
 
-  // Location match (10% weight)
+  // Location preference (10% weight)
   maxScore += 10;
-  if (internship.requirements.locations.includes(studentData.location)) {
+  if (studentData.location === "Anywhere in India" || studentData.location === "Virtual/Online") {
     totalScore += 10;
+  } else if (studentData.location === "My Home State" || studentData.location === "Nearby States") {
+    // For demo purposes, give partial score for location preferences
+    totalScore += 5;
   }
 
   return Math.round((totalScore / maxScore) * 100);
 };
 
 const getMatchBadgeColor = (percentage: number) => {
-  if (percentage >= 80) return "bg-match-high text-white";
-  if (percentage >= 60) return "bg-match-medium text-white";
-  return "bg-match-low text-white";
+  if (percentage >= 80) return "bg-green-500 text-white";
+  if (percentage >= 60) return "bg-yellow-500 text-white";
+  return "bg-red-500 text-white";
+};
+
+const getLevelBadgeColor = (level: string) => {
+  switch (level.toLowerCase()) {
+    case "beginner": return "bg-blue-100 text-blue-800";
+    case "intermediate": return "bg-yellow-100 text-yellow-800";
+    case "advanced": return "bg-red-100 text-red-800";
+    default: return "bg-gray-100 text-gray-800";
+  }
 };
 
 const Recommendations = () => {
@@ -90,6 +109,35 @@ const Recommendations = () => {
     const data = JSON.parse(savedData) as StudentData;
     setStudentData(data);
 
+    // Mock data - replace this with actual data loading
+    const internshipsData: Internship[] = [
+      {
+        company_name: "Tata Consultancy Services (TCS)",
+        location: "Mumbai",
+        stipend_per_month_inr: 0,
+        number_of_internships_offered: 41,
+        start_date: "2025-11-25",
+        level_type: "Beginner",
+        skill_set: "Cloud Computing / DevOps",
+        minimum_education: "Graduate",
+        domain: "Engineering",
+        role_offered: "Intern"
+      },
+      {
+        company_name: "Infosys",
+        location: "Bengaluru",
+        stipend_per_month_inr: 12000,
+        number_of_internships_offered: 43,
+        start_date: "2025-10-30",
+        level_type: "Intermediate",
+        skill_set: "Data Analytics / AI & ML",
+        minimum_education: "Post Graduate",
+        domain: "Engineering",
+        role_offered: "Intern"
+      },
+      // Add more mock data as needed
+    ];
+
     // Calculate matches and sort by percentage
     const matchedInternships = internshipsData
       .map(internship => ({
@@ -104,7 +152,15 @@ const Recommendations = () => {
 
   const handleApplyNow = (internship: Internship & { matchPercentage: number }) => {
     // In a real app, this would redirect to application form or external link
-    alert(`Applying to ${internship.company} for ${internship.role}. This would redirect to the application process.`);
+    alert(`Applying to ${internship.company_name} for ${internship.role_offered}. This would redirect to the application process.`);
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
   };
 
   if (!studentData) {
@@ -155,47 +211,67 @@ const Recommendations = () => {
             </CardContent>
           </Card>
         ) : (
-          recommendations.map((internship) => (
-            <Card key={internship.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+          recommendations.map((internship, index) => (
+            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
               <CardHeader className="pb-3">
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <CardTitle className="text-lg mb-1">{internship.company}</CardTitle>
-                    <p className="text-muted-foreground">{internship.role}</p>
+                    <CardTitle className="text-lg mb-1">{internship.company_name}</CardTitle>
+                    <p className="text-muted-foreground">{internship.role_offered}</p>
                   </div>
-                  <Badge className={`${getMatchBadgeColor(internship.matchPercentage)} font-semibold`}>
-                    {internship.matchPercentage}% Match
-                  </Badge>
+                  <div className="flex gap-2">
+                    <Badge className={getLevelBadgeColor(internship.level_type)}>
+                      {internship.level_type}
+                    </Badge>
+                    <Badge className={`${getMatchBadgeColor(internship.matchPercentage)} font-semibold`}>
+                      {internship.matchPercentage}% Match
+                    </Badge>
+                  </div>
                 </div>
               </CardHeader>
               
               <CardContent className="space-y-4">
-                {/* Location and Type */}
+                {/* Location and Details */}
                 <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                   <div className="flex items-center gap-1">
                     <MapPin className="w-4 h-4" />
                     {internship.location}
                   </div>
                   <div className="flex items-center gap-1">
-                    <Clock className="w-4 h-4" />
-                    {internship.duration}
+                    <Users className="w-4 h-4" />
+                    {internship.number_of_internships_offered} positions
                   </div>
                   <div className="flex items-center gap-1">
                     <IndianRupee className="w-4 h-4" />
-                    {internship.stipend.toLocaleString()}/month
+                    {internship.stipend_per_month_inr > 0 
+                      ? `₹${internship.stipend_per_month_inr.toLocaleString()}/month`
+                      : 'Unpaid'
+                    }
                   </div>
                   <div className="flex items-center gap-1">
                     <Calendar className="w-4 h-4" />
-                    Apply by {new Date(internship.deadline).toLocaleDateString()}
+                    Starts {formatDate(internship.start_date)}
                   </div>
                 </div>
 
-                {/* Description */}
-                <p className="text-sm leading-relaxed">{internship.description}</p>
+                {/* Skills and Domain */}
+                <div className="space-y-2">
+                  <div className="text-sm">
+                    <span className="font-medium">Skills: </span>
+                    <span className="text-muted-foreground">{internship.skill_set}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-medium">Domain: </span>
+                    <span className="text-muted-foreground">{internship.domain}</span>
+                  </div>
+                  <div className="text-sm">
+                    <span className="font-medium">Education Required: </span>
+                    <span className="text-muted-foreground">{internship.minimum_education}</span>
+                  </div>
+                </div>
 
-                {/* Type Badge */}
-                <div className="flex justify-between items-center">
-                  <Badge variant="outline">{internship.type}</Badge>
+                {/* Apply Button */}
+                <div className="flex justify-end">
                   <Button onClick={() => handleApplyNow(internship)} className="px-6">
                     Apply Now
                   </Button>
