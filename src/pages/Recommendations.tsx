@@ -135,7 +135,42 @@ const Recommendations = () => {
         domain: "Engineering",
         role_offered: "Intern"
       },
-      // Add more mock data as needed
+      {
+        company_name: "Wipro",
+        location: "Bengaluru",
+        stipend_per_month_inr: 12000,
+        number_of_internships_offered: 6,
+        start_date: "2025-12-19",
+        level_type: "Intermediate",
+        skill_set: "Cybersecurity / Cloud",
+        minimum_education: "Graduate",
+        domain: "Engineering",
+        role_offered: "Intern"
+      },
+      {
+        company_name: "HCL Technologies",
+        location: "Noida",
+        stipend_per_month_inr: 15000,
+        number_of_internships_offered: 17,
+        start_date: "2025-10-20",
+        level_type: "Intermediate",
+        skill_set: "Cloud / DevOps",
+        minimum_education: "Diploma",
+        domain: "Engineering",
+        role_offered: "Intern"
+      },
+      {
+        company_name: "Tech Mahindra",
+        location: "Pune",
+        stipend_per_month_inr: 15000,
+        number_of_internships_offered: 24,
+        start_date: "2026-03-25",
+        level_type: "Intermediate",
+        skill_set: "Python / Automation",
+        minimum_education: "Graduate",
+        domain: "Engineering",
+        role_offered: "Intern"
+      }
     ];
 
     // Calculate matches and sort by percentage
@@ -145,7 +180,8 @@ const Recommendations = () => {
         matchPercentage: calculateMatchPercentage(internship, data)
       }))
       .filter(internship => internship.matchPercentage > 20) // Only show decent matches
-      .sort((a, b) => b.matchPercentage - a.matchPercentage);
+      .sort((a, b) => b.matchPercentage - a.matchPercentage)
+      .slice(0, 5); // Limit to maximum of 5 recommendations
 
     setRecommendations(matchedInternships);
   }, [navigate]);
