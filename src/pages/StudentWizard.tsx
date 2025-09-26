@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useNavigate } from "react-router-dom";
 import { User, GraduationCap, Code, Building, MapPin, CheckCircle } from "lucide-react";
 
 interface StudentData {
@@ -28,7 +30,7 @@ interface TranslationStrings {
   female: string;
   yourName: string;
   yourAge: string;
-  enterAge: string;
+  selectAge: string;
   
   // Education
   education12th: string;
@@ -68,7 +70,7 @@ const defaultTranslations: TranslationStrings = {
   female: "Female",
   yourName: "Your Name",
   yourAge: "Your Age",
-  enterAge: "Enter your age",
+  selectAge: "Select your age",
   
   education12th: "12th Pass",
   diploma: "Diploma",
@@ -99,14 +101,14 @@ const WizardStep = ({
   step: number; 
   totalSteps: number; 
 }) => (
-  <div className="bg-blue-600 text-white p-6 text-center">
+  <div className="bg-wizard-header text-white p-6 text-center">
     <h2 className="text-xl font-semibold mb-3">{title}</h2>
     <div className="flex justify-center gap-2">
       {Array.from({ length: totalSteps }, (_, i) => (
         <div
           key={i}
           className={`w-2 h-2 rounded-full transition-colors duration-200 ${
-            i === step - 1 ? "bg-white" : "bg-blue-400"
+            i === step - 1 ? "bg-white" : "bg-wizard-step"
           }`}
         />
       ))}
@@ -122,72 +124,65 @@ const PersonalInfoStep = ({
   data: StudentData; 
   onChange: (data: Partial<StudentData>) => void;
   translations: TranslationStrings;
-}) => {
-  const handleAgeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    // Only allow numbers and limit to reasonable age range
-    if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 16 && parseInt(value) <= 100)) {
-      onChange({ age: value });
-    }
-  };
-
-  return (
-    <div className="p-6 space-y-6">
-      <div>
-        <h3 className="font-semibold mb-4">{translations.gender}</h3>
-        <div className="grid grid-cols-2 gap-4">
-          {[
-            { value: "male", label: translations.male, icon: "👨" },
-            { value: "female", label: translations.female, icon: "👩" }
-          ].map((option) => (
-            <Card
-              key={option.value}
-              className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
-                data.gender === option.value ? "ring-2 ring-blue-500 bg-blue-50" : ""
-              }`}
-              onClick={() => onChange({ gender: option.value })}
-            >
-              <CardContent className="p-4 text-center">
-                <div className="text-3xl mb-2">{option.icon}</div>
-                <div className="font-medium">{option.label}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-semibold mb-2">{translations.yourName}</h3>
-        <Input
-          placeholder={translations.yourName}
-          value={data.name}
-          onChange={(e) => onChange({ name: e.target.value })}
-          className="transition-all duration-200"
-        />
-      </div>
-
-      <div>
-        <h3 className="font-semibold mb-2">{translations.yourAge}</h3>
-        <Input
-          type="number"
-          placeholder={translations.enterAge}
-          value={data.age}
-          onChange={handleAgeChange}
-          className="transition-all duration-200"
-          min="16"
-          max="100"
-        />
-        {data.age && (parseInt(data.age) < 16 || parseInt(data.age) > 100) && (
-          <p className="text-sm text-red-500 mt-1">Please enter an age between 16 and 100</p>
-        )}
-      </div>
-
-      <div className="flex justify-center py-4">
-        <User className="w-16 h-16 text-gray-400" />
+}) => (
+  <div className="p-6 space-y-6">
+    <div>
+      <h3 className="font-semibold mb-4">{translations.gender}</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {[
+          { value: "male", label: translations.male, icon: "👨" },
+          { value: "female", label: translations.female, icon: "👩" }
+        ].map((option) => (
+          <Card
+            key={option.value}
+            className={`cursor-pointer transition-all duration-200 hover:bg-muted hover:scale-105 ${
+              data.gender === option.value ? "ring-2 ring-primary bg-accent/50" : ""
+            }`}
+            onClick={() => onChange({ gender: option.value })}
+          >
+            <CardContent className="p-4 text-center">
+              <div className="text-3xl mb-2">{option.icon}</div>
+              <div className="font-medium">{option.label}</div>
+            </CardContent>
+          </Card>
+        ))}
       </div>
     </div>
-  );
-};
+
+    <div>
+      <h3 className="font-semibold mb-2">{translations.yourName}</h3>
+      <Input
+        placeholder={translations.yourName}
+        value={data.name}
+        onChange={(e) => onChange({ name: e.target.value })}
+        className="transition-all duration-200"
+      />
+    </div>
+
+  <div>
+  <h3 className="font-semibold mb-2">{translations.yourAge}</h3>
+  <Input
+    type="text"
+    placeholder={translations.selectAge || "Enter your age"}
+    value={data.age}
+    onChange={(e) => {
+      const value = e.target.value;
+      // Allow only numbers between 0 and 150
+      if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 0 && parseInt(value) <= 150)) {
+        onChange({ age: value });
+      }
+    }}
+    className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
+    maxLength={3}
+  />
+</div>
+
+
+    <div className="flex justify-center py-4">
+      <User className="w-16 h-16 text-muted-foreground" />
+    </div>
+  </div>
+);
 
 const EducationStep = ({ 
   data, 
@@ -211,22 +206,22 @@ const EducationStep = ({
         {educationOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
-              data.education === option.value ? "ring-2 ring-blue-500 bg-blue-50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-muted hover:scale-105 ${
+              data.education === option.value ? "ring-2 ring-primary bg-accent/50" : ""
             }`}
             onClick={() => onChange({ education: option.value })}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.education === option.value && <CheckCircle className="w-5 h-5 text-blue-500" />}
+              {data.education === option.value && <CheckCircle className="w-5 h-5 text-primary" />}
             </CardContent>
           </Card>
         ))}
       </div>
       
       <div className="flex justify-center py-4">
-        <GraduationCap className="w-16 h-16 text-gray-400" />
+        <GraduationCap className="w-16 h-16 text-muted-foreground" />
       </div>
     </div>
   );
@@ -294,28 +289,28 @@ const SkillsStep = ({
 
   return (
     <div className="p-6 space-y-6">
-      <p className="text-sm text-gray-600 mb-4">{translations.selectMultipleSkills}</p>
+      <p className="text-sm text-muted-foreground mb-4">{translations.selectMultipleSkills}</p>
       
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {skillOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
-              data.skills.includes(option.value) ? "ring-2 ring-blue-500 bg-blue-50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-muted hover:scale-105 ${
+              data.skills.includes(option.value) ? "ring-2 ring-primary bg-accent/50" : ""
             }`}
             onClick={() => toggleSkill(option.value)}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.skills.includes(option.value) && <CheckCircle className="w-5 h-5 text-blue-500" />}
+              {data.skills.includes(option.value) && <CheckCircle className="w-5 h-5 text-primary" />}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="flex justify-center py-4">
-        <Code className="w-16 h-16 text-gray-400" />
+        <Code className="w-16 h-16 text-muted-foreground" />
       </div>
     </div>
   );
@@ -351,28 +346,28 @@ const SectorStep = ({
 
   return (
     <div className="p-6 space-y-6">
-      <p className="text-sm text-gray-600 mb-4">{translations.selectSectors}</p>
+      <p className="text-sm text-muted-foreground mb-4">{translations.selectSectors}</p>
       
       <div className="space-y-3">
         {sectorOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
-              data.sectors.includes(option.value) ? "ring-2 ring-blue-500 bg-blue-50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-muted hover:scale-105 ${
+              data.sectors.includes(option.value) ? "ring-2 ring-primary bg-accent/50" : ""
             }`}
             onClick={() => toggleSector(option.value)}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.sectors.includes(option.value) && <CheckCircle className="w-5 h-5 text-blue-500" />}
+              {data.sectors.includes(option.value) && <CheckCircle className="w-5 h-5 text-primary" />}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="flex justify-center py-4">
-        <Building className="w-16 h-16 text-gray-400" />
+        <Building className="w-16 h-16 text-muted-foreground" />
       </div>
     </div>
   );
@@ -400,22 +395,22 @@ const LocationStep = ({
         {locationOptions.map((option) => (
           <Card
             key={option.value}
-            className={`cursor-pointer transition-all duration-200 hover:bg-gray-50 hover:scale-105 ${
-              data.location === option.value ? "ring-2 ring-blue-500 bg-blue-50" : ""
+            className={`cursor-pointer transition-all duration-200 hover:bg-muted hover:scale-105 ${
+              data.location === option.value ? "ring-2 ring-primary bg-accent/50" : ""
             }`}
             onClick={() => onChange({ location: option.value })}
           >
             <CardContent className="p-4 flex items-center gap-4">
               <div className="text-2xl">{option.icon}</div>
               <div className="font-medium flex-1">{option.label}</div>
-              {data.location === option.value && <CheckCircle className="w-5 h-5 text-blue-500" />}
+              {data.location === option.value && <CheckCircle className="w-5 h-5 text-primary" />}
             </CardContent>
           </Card>
         ))}
       </div>
 
       <div className="flex justify-center py-4">
-        <MapPin className="w-16 h-16 text-gray-400" />
+        <MapPin className="w-16 h-16 text-muted-foreground" />
       </div>
     </div>
   );
@@ -423,10 +418,10 @@ const LocationStep = ({
 
 interface StudentWizardProps {
   translations?: Partial<TranslationStrings>;
-  onComplete?: (data: StudentData) => void;
 }
 
-const StudentWizard = ({ translations: customTranslations, onComplete }: StudentWizardProps) => {
+const StudentWizard = ({ translations: customTranslations }: StudentWizardProps) => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [studentData, setStudentData] = useState<StudentData>({
     gender: "",
@@ -448,8 +443,7 @@ const StudentWizard = ({ translations: customTranslations, onComplete }: Student
 
   const canProceed = useCallback(() => {
     switch (currentStep) {
-      case 1: return studentData.gender && studentData.name && studentData.age && 
-                     parseInt(studentData.age) >= 16 && parseInt(studentData.age) <= 100;
+      case 1: return studentData.gender && studentData.name && studentData.age;
       case 2: return studentData.education;
       case 3: return studentData.skills.length > 0;
       case 4: return studentData.sectors.length > 0;
@@ -466,30 +460,30 @@ const StudentWizard = ({ translations: customTranslations, onComplete }: Student
     } else {
       setIsNavigating(true);
       try {
-        // Call the completion callback if provided
-        if (onComplete) {
-          onComplete(studentData);
-        } else {
-          // Default behavior - log data
-          console.log('Student profile data:', JSON.stringify(studentData, null, 2));
-          alert('Profile completed! Check console for data.');
-        }
+        // Save data to memory instead of localStorage for Claude.ai compatibility
+        // In a real app, this would be localStorage
+        const profileData = JSON.stringify(studentData);
+        console.log('Student profile data:', profileData);
         
-        setIsNavigating(false);
+        // Add a small delay to ensure state updates are complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        navigate('/recommendations');
       } catch (error) {
-        console.error('Error during completion:', error);
+        console.error('Error during navigation:', error);
         setIsNavigating(false);
       }
     }
-  }, [currentStep, totalSteps, studentData, isNavigating, onComplete]);
+  }, [currentStep, totalSteps, studentData, navigate, isNavigating]);
 
   const handlePrevious = useCallback(() => {
     if (isNavigating) return;
     
     if (currentStep > 1) {
       setCurrentStep(prev => prev - 1);
+    } else {
+      navigate('/');
     }
-  }, [currentStep, isNavigating]);
+  }, [currentStep, navigate, isNavigating]);
 
   const getStepTitle = useCallback(() => {
     switch (currentStep) {
@@ -515,8 +509,15 @@ const StudentWizard = ({ translations: customTranslations, onComplete }: Student
     }
   }, [currentStep, studentData, updateStudentData, translations]);
 
+  // Cleanup effect
+  useEffect(() => {
+    return () => {
+      setIsNavigating(false);
+    };
+  }, []);
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <WizardStep title={getStepTitle()} step={currentStep} totalSteps={totalSteps} />
       
       <div className="max-w-md mx-auto">
@@ -528,7 +529,7 @@ const StudentWizard = ({ translations: customTranslations, onComplete }: Student
           <Button
             variant="outline"
             onClick={handlePrevious}
-            disabled={isNavigating || currentStep === 1}
+            disabled={isNavigating}
             className="px-8 transition-all duration-200"
           >
             {currentStep === 1 ? translations.back : translations.previous}
