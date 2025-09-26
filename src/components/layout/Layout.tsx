@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex items-center space-x-4">
               <GoogleTranslate 
                 pageLanguage="en"
-                includedLanguages="en,am,ar,eu,bn,en-GB,pt-BR,bg,ca,chr,hr,cs,da,nl,en,et,fil,fi,fr,de,el,gu,iw,hi,hu,is,id,it,ja,kn,ko,lv,lt,ms,ml,mr,no,pl,pt-PT,ro,ru,sr,zh-CN,sk,sl,es,sw,sv,ta,te,th,zh-TW,tr,ur,uk,vi,cy"
+                includedLanguages="en,as,bn,brx,doi,gu,hi,kn,ks,kok,mai,ml,mni,mr,ne,or,pa,sa,sat,sd,ta,te,ur"
                 layout="HORIZONTAL"
                 className="translate-widget"
               />
