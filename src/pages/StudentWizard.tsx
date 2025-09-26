@@ -159,7 +159,7 @@ const PersonalInfoStep = ({
       />
     </div>
 
-  <div>
+<div>
   <h3 className="font-semibold mb-2">{translations.yourAge}</h3>
   <Input
     type="text"
@@ -167,15 +167,23 @@ const PersonalInfoStep = ({
     value={data.age}
     onChange={(e) => {
       const value = e.target.value;
-      // Allow only numbers between 0 and 150
-      if (value === '' || (/^\d+$/.test(value) && parseInt(value) >= 0 && parseInt(value) <= 150)) {
+      // Allow empty or numeric input only
+      if (value === '' || /^\d+$/.test(value)) {
         onChange({ age: value });
       }
     }}
+    onBlur={() => {
+      // Ensure age is within 20-26 on blur
+      const num = parseInt(data.age);
+      if (isNaN(num) || num < 20 || num > 26) {
+        onChange({ age: '' }); // reset invalid age
+      }
+    }}
     className="transition-all duration-200 focus:ring-2 focus:ring-blue-500"
-    maxLength={3}
+    maxLength={2}
   />
 </div>
+
 
 
     <div className="flex justify-center py-4">
